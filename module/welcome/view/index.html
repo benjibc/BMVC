@@ -1,0 +1,102 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<script src="/socket.io/socket.io.js"></script>
+<script>
+	//var socket = io.connect('http://54.243.140.41/');
+	var socket = io.connect('http://localhost/');
+	socket.on('connection', function (data) {
+
+		////////////////////////////////////////////////////////////////
+		// here, the data received is a json that contains the song data
+		console.log(data);
+        var userName = getName();    		
+        console.log(userName);
+
+		////////////////////////////////////////////////////////////////
+		//you may send data back to the server if you wish to
+         
+		if(socket.emit('getUserName', { 'name' : userName}))
+        {
+            console.log('message sent to the server');
+        }
+	});
+
+    ////////////////////////////////////////////////////////////////////
+    //return the status of the room
+    socket.on('roomStatus', function(data) {
+        console.log(data);
+        if(data == 'full')
+            console.log('The room is full! Please come back later :)');
+        else if (data['numPeople'] == 1)
+            console.log('Waiting for someone else to join');
+        else
+        {
+            console.log(data.message);
+            console.log('Get ready, the game is on the way');
+        }
+    });
+
+	//////////////////////////////////////////////////////////////////
+	//this is the server reply to you if something has happened:either
+	//you or your opponent has hit something
+	//signature of the message:
+	//if you were not the sender:
+	//{
+	//		'sender' : false,
+	//		'opponent_hit1' : true,
+	//		'opponent_hit2' : false,
+	//		'opponent_hit3' : true,
+	//		'score' : 2120
+	//}
+	//if you were the sender
+	//{
+	//		'sender' : true,
+	//		'score'	: 2130
+	//}
+	socket.on('serverMsg', function(message){
+
+		/////////////////////////////////////////////////////////////////
+		// This is the data received from the server
+
+		console.log('Message received from server');
+
+		console.log(message);
+	});
+
+
+	//////////////////////////////////////////////////////////////////
+	// This function is used to send message to server
+	// signature:
+	// {
+	//		'hit1' : true,
+	//		'hit2' : false,
+	//		'hit3' : true,
+	//		'score' : 1234
+	// }
+	function sendMessage(msg)
+	{
+		msg = { 'hit1' : true,
+						'hit2' : false,
+						'hit3' : true,
+						'score' : 1234 };
+				if(socket.emit('clientMsg', msg))
+				{
+						console.log("You are sending this message to the server");
+						console.log(msg);
+				}
+	}
+
+    function getName()
+    {
+        var x;
+
+        var name=prompt("Please enter your name","Anonymous");
+
+        if (name!=null)
+        {
+            return name;
+        }
+        return null;
+    } 
+</script>
+</head><body><button value="click me" onclick="sendMessage(&#39;greeting from client&#39;)">Click here </button>
+</body></html>

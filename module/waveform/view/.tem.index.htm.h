@@ -1,0 +1,42 @@
+#ifndef WELCOME_VIEW_TEM_INDEX_HTM
+#define WELCOME_VIEW_TEM_INDEX_HTM
+
+const char WELCOME_TEM_INDEX_HTM[] = 
+"<div id=\"main\">\n"
+"<p>My name is {% firstName %} {% lastName %}</p>\n"
+"</div>\n"
+"\n"
+"\n"
+"var sys = require(\"util\"),\n"
+"\t\thttp = require(\"http\"),\n"
+"\t\turl = require(\"url\"),\n"
+"\t\tpath = require(\"path\"),\n"
+"\t\tfs = require(\"fs\");\n"
+"http.createServer(function(request, response) {\n"
+"\t\tvar uri = url.parse(request.url).pathname;\n"
+"\t\tvar filename = path.join(process.cwd(), uri);\n"
+"\t\tpath.exists(filename, function(exists) {\n"
+"\t\t	if(!exists) {\n"
+"\t\t		response.writeHeader(404, {\"Content-Type\": \"text/plain\"});\n"
+"\t\t		response.write(\"404 Not Found\\n\");\n"
+"\t\t		response.end();\n"
+"\t\t		return;\n"
+"\t\t	}\n"
+"\t\t	fs.readFile(filename, \"binary\", function(err, file) {\n"
+"\t\t		if(err) {\n"
+"\t\t			response.writeHeader(500, {\"Content-Type\": \"text/plain\"});\n"
+"\t\t			response.write(err + \"\\n\");\n"
+"\t\t			response.end();\n"
+"\t\t			return;\n"
+"\t\t		}\n"
+"\t\t		response.writeHeader(200);\n"
+"\t\t		response.write(file, \"binary\");\n"
+"\t\t		response.end();\n"
+"\t\t	});\n"
+"\t\t});\n"
+"}).listen(8080);\n"
+"sys.puts(\"Server running at http://localhost:8080/\");\n"
+"\n"
+;
+
+#endif

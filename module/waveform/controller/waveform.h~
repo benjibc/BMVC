@@ -1,0 +1,54 @@
+#ifndef BHMVC_MODULE_HELLO
+#define BHMVC_MODULE_HELLO
+
+#include "../../../bmvc/controllers.h"
+#include "../model/SoundFileReader.h"
+#include <fstream>
+
+class Waveform: public Controller
+{
+    public:
+    Waveform(const char * httpRequest) : Controller(__FILE__) {}
+
+    void WelcomeMsg()
+    {
+       SoundFileReader * sndreader = new SoundFileReader();
+       sndreader->loadMusicFile("A.wav",BasicSoundInfo()); 
+
+       float * buffer;
+       int bufferSize;
+       int sampleRate = 2;
+       buffer = sndreader->outputNormalizedAverageToBuffer(bufferSize,sampleRate);
+ 
+       JSON output = JSON();
+       for (int i = 0; i < bufferSize; i++)
+       {
+          output[i]  = buffer[i];
+       }
+       delete [] buffer;
+       
+       output.json_encode();
+      
+       
+       this->output().setOutput(output.json_encode());
+       JSON curJSON;
+       curJSON["firstName"] = "Benny";
+       curJSON["lastName"] = "Chen";
+       render("index.htm", curJSON);
+       //renderConst(WELCOME_TEM_INDEX_HTM, curJSON);
+       this->output().appendOutput("Second part of output!");
+    }
+
+    void index()
+    {
+        output().setOutput("This is the index page.\nWelcome to BHMVC!");
+    }
+};
+
+Controller * CreateWelcome(const char * httpRequest)
+{
+    return new Welcome(httpRequest);
+}
+
+
+#endif
